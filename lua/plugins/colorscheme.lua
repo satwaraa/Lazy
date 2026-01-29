@@ -5,4 +5,5 @@ return {
       colorscheme = "custom",
     },
   },
+  { "wakatime/vim-wakatime", lazy = false },
 }
