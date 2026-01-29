@@ -18,3 +18,9 @@ vim.keymap.set("n", "<C-w>", "<cmd>bd<CR>", { desc = "Close buffer" })
 -- Alternative: Use Ctrl + H and Ctrl + L for buffer navigation
 vim.keymap.set("n", "<C-l>", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<C-h>", ":bprevious<CR>", { desc = "Previous buffer" })
+
+-- Move lines up and down with Alt + Up/Down
+vim.keymap.set("n", "<A-Down>", ":m .+1<CR>==", { desc = "Move line down" })
+vim.keymap.set("n", "<A-Up>", ":m .-2<CR>==", { desc = "Move line up" })
+vim.keymap.set("v", "<A-Down>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+vim.keymap.set("v", "<A-Up>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
