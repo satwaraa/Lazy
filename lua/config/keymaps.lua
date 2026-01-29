@@ -14,3 +14,7 @@ vim.keymap.set("v", "<C-A-d>", ":t'><CR>gv", { desc = "Duplicate selection down"
 
 -- Close buffer with Ctrl + W
 vim.keymap.set("n", "<C-w>", "<cmd>bd<CR>", { desc = "Close buffer" })
+
+-- Alternative: Use Ctrl + H and Ctrl + L for buffer navigation
+vim.keymap.set("n", "<C-l>", ":bnext<CR>", { desc = "Next buffer" })
+vim.keymap.set("n", "<C-h>", ":bprevious<CR>", { desc = "Previous buffer" })
