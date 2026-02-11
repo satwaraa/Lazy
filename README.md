@@ -88,6 +88,10 @@ All custom keybindings configured for this Neovim setup.
 | `<leader>sv` | Normal | Split vertical         |
 | `<leader>sh` | Normal | Split horizontal       |
 | `<leader>sx` | Normal | Close split            |
+| `Alt + H`    | Normal | Move to left split     |
+| `Alt + J`    | Normal | Move to bottom split   |
+| `Alt + K`    | Normal | Move to top split      |
+| `Alt + L`    | Normal | Move to right split    |
 | `Ctrl + ↑`   | Normal | Increase window height |
 | `Ctrl + ↓`   | Normal | Decrease window height |
 | `Ctrl + ←`   | Normal | Decrease window width  |

@@ -104,6 +104,12 @@ vim.keymap.set("n", "<C-Down>", "<cmd>resize -2<CR>", { desc = "Decrease height"
 vim.keymap.set("n", "<C-Left>", "<cmd>vertical resize -2<CR>", { desc = "Decrease width" })
 vim.keymap.set("n", "<C-Right>", "<cmd>vertical resize +2<CR>", { desc = "Increase width" })
 
+-- Navigate between splits with Alt + hjkl
+vim.keymap.set("n", "<A-h>", "<C-w>h", { desc = "Move to left split" })
+vim.keymap.set("n", "<A-j>", "<C-w>j", { desc = "Move to bottom split" })
+vim.keymap.set("n", "<A-k>", "<C-w>k", { desc = "Move to top split" })
+vim.keymap.set("n", "<A-l>", "<C-w>l", { desc = "Move to right split" })
+
 -- ============================================
 -- USEFUL EXTRAS
 -- ============================================
