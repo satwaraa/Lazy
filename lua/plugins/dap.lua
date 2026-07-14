@@ -1,6 +1,42 @@
+-- Compile the current C/C++ file with debug symbols and launch it under codelldb.
+-- No menu, no path prompt — VSCode "Debug C++ File" behaviour.
+local function debug_current_cpp()
+  local dap = require("dap")
+  local src = vim.fn.expand("%:p")
+  local bin = vim.fn.expand("%:p:r") -- source path minus extension
+  vim.cmd("silent! write") -- save before compiling
+  local out = vim.fn.system({ "g++", "-g", "-O0", "-std=c++20", src, "-o", bin })
+  if vim.v.shell_error ~= 0 then
+    vim.notify(out, vim.log.levels.ERROR, { title = "C++ compile failed" })
+    return
+  end
+  dap.run({
+    name = "Debug C++ File",
+    type = "codelldb",
+    request = "launch",
+    program = bin,
+    cwd = "${workspaceFolder}",
+    stopOnEntry = false,
+  })
+end
+
+-- F5 like VSCode: continue if a session is live, otherwise start.
+-- For C/C++ "start" means compile-and-run the current file; other languages
+-- fall back to normal dap.continue() (their own extras provide the config).
+local function start_or_continue()
+  local dap = require("dap")
+  if dap.session() then
+    return dap.continue()
+  end
+  local ft = vim.bo.filetype
+  if ft == "cpp" or ft == "c" then
+    return debug_current_cpp()
+  end
+  return dap.continue()
+end
+
 return {
   -- Core debugging: nvim-dap, dap-ui, virtual text, mason-nvim-dap.
-  -- This gives you the <leader>d... keymaps and the debug UI for ALL languages.
   { import = "lazyvim.plugins.extras.dap.core" },
 
   -- Auto-install the C/C++/Rust debug adapter via Mason.
@@ -9,13 +45,51 @@ return {
     opts = { ensure_installed = { "codelldb" } },
   },
 
-  -- Register codelldb as the adapter for c, cpp, and rust, plus a default
-  -- "launch" configuration that asks which executable to debug.
+  -- Stop mason-nvim-dap from injecting its generic "LLDB: Launch" configs;
+  -- register the adapter only, so the config list stays clean.
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    opts = {
+      handlers = {
+        codelldb = function(config)
+          require("dap").adapters.codelldb = config.adapters
+        end,
+      },
+    },
+  },
+
+  -- Bigger Scopes (variables) panel and a wider sidebar.
+  {
+    "rcarriga/nvim-dap-ui",
+    opts = {
+      layouts = {
+        {
+          position = "left",
+          size = 50, -- sidebar width in columns (default 40)
+          elements = {
+            { id = "scopes", size = 0.55 }, -- the Local/Static/Global panel — biggest
+            { id = "watches", size = 0.20 },
+            { id = "stacks", size = 0.15 },
+            { id = "breakpoints", size = 0.10 },
+          },
+        },
+        {
+          position = "bottom",
+          size = 10, -- console/repl height in rows
+          elements = {
+            { id = "repl", size = 0.5 },
+            { id = "console", size = 0.5 },
+          },
+        },
+      },
+    },
+  },
+
+  -- VSCode-style single-key debug shortcuts + codelldb adapter path.
   {
     "mfussenegger/nvim-dap",
-    -- VSCode-style single-key debug shortcuts (added on top of LazyVim's <leader>d... keys).
     keys = {
-      { "<F5>", function() require("dap").continue() end, desc = "Debug: Start/Continue" },
+      { "<F5>", start_or_continue, desc = "Debug: Start/Continue" },
       { "<S-F5>", function() require("dap").terminate() end, desc = "Debug: Stop" },
       { "<C-S-F5>", function() require("dap").restart() end, desc = "Debug: Restart" },
       { "<F6>", function() require("dap").pause() end, desc = "Debug: Pause" },
@@ -25,15 +99,12 @@ return {
       { "<S-F11>", function() require("dap").step_out() end, desc = "Debug: Step Out" },
     },
     opts = function()
-      local dap = require("dap")
-
-      -- Resolve codelldb from Mason's bin, falling back to $PATH.
+      -- Point codelldb at the Mason binary (avoids any $PATH timing issues).
       local codelldb = vim.fn.stdpath("data") .. "/mason/bin/codelldb"
       if vim.fn.executable(codelldb) == 0 then
         codelldb = "codelldb"
       end
-
-      dap.adapters.codelldb = {
+      require("dap").adapters.codelldb = {
         type = "server",
         port = "${port}",
         executable = {
@@ -41,23 +112,6 @@ return {
           args = { "--port", "${port}" },
         },
       }
-
-      local cpp = {
-        {
-          name = "Launch file",
-          type = "codelldb",
-          request = "launch",
-          program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-          end,
-          cwd = "${workspaceFolder}",
-          stopOnEntry = false,
-        },
-      }
-
-      dap.configurations.cpp = cpp
-      dap.configurations.c = cpp
-      dap.configurations.rust = cpp
     end,
   },
 }
