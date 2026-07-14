@@ -7,7 +7,9 @@ vim.keymap.set("n", "<C-/>", "gcc", { remap = true })
 vim.keymap.set("v", "<C-/>", "gc", { remap = true })
 
 -- Toggle terminal with Ctrl + `
-vim.keymap.set("n", "<C-`>", function() Snacks.terminal() end, { desc = "Toggle Terminal" })
+vim.keymap.set("n", "<C-`>", function()
+  Snacks.terminal()
+end, { desc = "Toggle Terminal" })
 vim.keymap.set("t", "<C-`>", "<cmd>close<CR>", { desc = "Hide Terminal" })
 
 -- Duplicate line down with Ctrl + Alt + D
@@ -83,7 +85,12 @@ vim.keymap.set("v", "p", '"_dP', { desc = "Paste without yanking" })
 vim.keymap.set({ "n", "v" }, "x", '"_x', { desc = "Delete char without yank" })
 
 -- Quick find and replace word under cursor
-vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
+vim.keymap.set(
+  "n",
+  "<leader>rw",
+  [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Replace word under cursor" }
+)
 
 -- Add blank line above/below without entering insert mode
 vim.keymap.set("n", "<leader>o", "o<Esc>k", { desc = "Add blank line below" })
@@ -95,6 +102,7 @@ vim.keymap.set("n", "<leader>O", "O<Esc>j", { desc = "Add blank line above" })
 
 -- Quick split windows
 vim.keymap.set("n", "<leader>sv", "<cmd>vsplit<CR>", { desc = "Split vertical" })
+vim.keymap.set("n", "|", "<cmd>vsplit<CR>", { desc = "Split vertical" })
 vim.keymap.set("n", "<leader>sh", "<cmd>split<CR>", { desc = "Split horizontal" })
 vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close split" })
 
