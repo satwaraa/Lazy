@@ -1,6 +1,6 @@
 return {
-  -- C/C++ language support: clangd LSP + clang-format (via conform.nvim)
-  { import = "lazyvim.plugins.extras.lang.clangd" },
+  -- C/C++ language support (clangd LSP + clang-format) is enabled via the
+  -- lazyvim.plugins.extras.lang.clangd import in lua/config/lazy.lua.
 
   -- Match the editor's live indentation to the clang-format style (4 spaces)
   {

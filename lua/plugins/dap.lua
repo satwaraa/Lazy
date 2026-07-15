@@ -20,9 +20,29 @@ local function debug_current_cpp()
   })
 end
 
+-- Launch the current Go file under delve. No menu, no path prompt — the Go
+-- counterpart of debug_current_cpp. There is no explicit compile step here:
+-- delve builds the program itself as part of the launch request.
+local function debug_current_go()
+  local dap = require("dap")
+  vim.cmd("silent! write") -- save before delve builds
+  dap.run({
+    name = "Debug Go File",
+    type = "go", -- adapter registered by nvim-dap-go
+    request = "launch",
+    mode = "debug",
+    -- Single file, like the C++ path: `dsa/go/arrays/00.sorting.go`. Sibling
+    -- files with their own func main() won't collide. Use "${fileDirname}"
+    -- instead if you keep one multi-file main package per directory.
+    program = "${file}",
+    cwd = "${workspaceFolder}",
+  })
+end
+
 -- F5 like VSCode: continue if a session is live, otherwise start.
--- For C/C++ "start" means compile-and-run the current file; other languages
--- fall back to normal dap.continue() (their own extras provide the config).
+-- For C/C++ and Go "start" means build-and-run the current file; other
+-- languages fall back to normal dap.continue() (their own extras provide
+-- the config).
 local function start_or_continue()
   local dap = require("dap")
   if dap.session() then
@@ -31,6 +51,9 @@ local function start_or_continue()
   local ft = vim.bo.filetype
   if ft == "cpp" or ft == "c" then
     return debug_current_cpp()
+  end
+  if ft == "go" then
+    return debug_current_go()
   end
   return dap.continue()
 end
@@ -85,15 +108,26 @@ return {
     },
   },
 
+  -- Persist breakpoints to disk (per project) and auto-restore them on file open.
+  {
+    "Weissle/persistent-breakpoints.nvim",
+    event = "BufReadPost",
+    opts = {
+      load_breakpoints_event = { "BufReadPost" },
+    },
+  },
+
   -- VSCode-style single-key debug shortcuts + codelldb adapter path.
   {
     "mfussenegger/nvim-dap",
+    dependencies = { "Weissle/persistent-breakpoints.nvim" },
     keys = {
       { "<F5>", start_or_continue, desc = "Debug: Start/Continue" },
       { "<S-F5>", function() require("dap").terminate() end, desc = "Debug: Stop" },
       { "<C-S-F5>", function() require("dap").restart() end, desc = "Debug: Restart" },
       { "<F6>", function() require("dap").pause() end, desc = "Debug: Pause" },
-      { "<F9>", function() require("dap").toggle_breakpoint() end, desc = "Debug: Toggle Breakpoint" },
+      -- Toggle via persistent-breakpoints so the breakpoint is saved to disk.
+      { "<F9>", function() require("persistent-breakpoints.api").toggle_breakpoint() end, desc = "Debug: Toggle Breakpoint (persistent)" },
       { "<F10>", function() require("dap").step_over() end, desc = "Debug: Step Over" },
       { "<F11>", function() require("dap").step_into() end, desc = "Debug: Step Into" },
       { "<S-F11>", function() require("dap").step_out() end, desc = "Debug: Step Out" },
