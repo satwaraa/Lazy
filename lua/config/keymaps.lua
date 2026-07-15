@@ -2,9 +2,13 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
--- Toggle Comments
-vim.keymap.set("n", "<C-/>", "gcc", { remap = true })
-vim.keymap.set("v", "<C-/>", "gc", { remap = true })
+-- Toggle Comments.
+-- Terminals disagree about Ctrl+/: some send <C-/>, most send <C-_> (0x1F).
+-- Map both so the key works regardless of which one arrives.
+for _, key in ipairs({ "<C-/>", "<C-_>" }) do
+  vim.keymap.set("n", key, "gcc", { remap = true, desc = "Toggle comment" })
+  vim.keymap.set("v", key, "gc", { remap = true, desc = "Toggle comment" })
+end
 
 -- Toggle terminal with Ctrl + `
 vim.keymap.set("n", "<C-`>", function()
