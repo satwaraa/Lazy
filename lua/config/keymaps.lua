@@ -27,6 +27,16 @@ vim.keymap.set("n", "<C-w>", "<cmd>bd<CR>", { desc = "Close buffer" })
 vim.keymap.set("n", "<C-l>", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<C-h>", ":bprevious<CR>", { desc = "Previous buffer" })
 
+-- Jump directly to a buffer by its tab position with Alt + 1..9 (Alt + 0 = last)
+for i = 1, 9 do
+  vim.keymap.set("n", "<A-" .. i .. ">", function()
+    require("bufferline").go_to(i, true)
+  end, { desc = "Go to buffer " .. i })
+end
+vim.keymap.set("n", "<A-0>", function()
+  require("bufferline").go_to(-1, true)
+end, { desc = "Go to last buffer" })
+
 -- Move lines up and down with Alt + Up/Down
 vim.keymap.set("n", "<A-Down>", ":m .+1<CR>==", { desc = "Move line down" })
 vim.keymap.set("n", "<A-Up>", ":m .-2<CR>==", { desc = "Move line up" })

@@ -35,6 +35,8 @@ local colors = {
 vim.api.nvim_set_hl(0, "Normal", { fg = colors.fg, bg = colors.bg })
 vim.api.nvim_set_hl(0, "NormalNC", { fg = colors.fg, bg = colors.bg })
 vim.api.nvim_set_hl(0, "NormalFloat", { fg = colors.fg, bg = colors.bg })
+vim.api.nvim_set_hl(0, "FloatBorder", { fg = colors.selection, bg = colors.bg })
+vim.api.nvim_set_hl(0, "FloatTitle", { fg = colors.accent, bg = colors.bg, bold = true })
 vim.api.nvim_set_hl(0, "NormalSB", { fg = colors.fg, bg = colors.bg })
 vim.api.nvim_set_hl(0, "SignColumn", { bg = colors.bg })
 vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = colors.bg, bg = colors.bg })
